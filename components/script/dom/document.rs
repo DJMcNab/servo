@@ -1892,10 +1892,12 @@ impl Document {
     }
 
     // https://html.spec.whatwg.org/multipage/#the-end
-    pub fn maybe_queue_document_completion(&self) {
-        if self.loader.borrow().is_blocked() {
+    pub fn maybe_queue_document_completion(&self) -> bool {
+        if self.loader.borrow().is_blocked() ||
+            self.window.window_proxy().is_delaying_load_events_mode()
+        {
             // Step 6.
-            return;
+            return true;
         }
 
         assert!(!self.loader.borrow().events_inhibited());
@@ -2004,6 +2006,7 @@ impl Document {
 
         // Step 12.
         // TODO: completely loaded.
+        false
     }
 
     // https://html.spec.whatwg.org/multipage/#pending-parsing-blocking-script
