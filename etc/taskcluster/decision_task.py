@@ -44,6 +44,7 @@ def main(task_for):
             "try": all_tests,
             "try-taskcluster": [
                 # Add functions here as needed, in your push to that branch
+                linux_nightly,
             ],
             "master": [
                 upload_docs,
@@ -295,6 +296,19 @@ def windows_release():
         .with_artifacts("repo/target/release/msi/Servo.exe",
                         "repo/target/release/msi/Servo.zip")
         .find_or_create("build.windows_x64_release." + CONFIG.git_sha)
+    )
+
+
+def linux_nightly():
+    return (
+        linux_build_task("Nightly build")
+        .with_treeherder("Linux x64", "Nightly")
+        .with_script("""
+            ./mach build --release
+            ./mach package --release
+        """)
+        .with_artifacts("/repo/target/release/servo-tech-demo.tar.gz")
+        .find_or_create("build.linux_x64_nightly" + CONFIG.git_sha)
     )
 
 
