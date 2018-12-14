@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+use crate::event_loop::EventLoop;
 use bluetooth_traits::BluetoothRequest;
 use canvas_traits::webgl::WebGLPipeline;
 use compositing::compositor_thread::Msg as CompositorMsg;
 use compositing::CompositionPipeline;
 use compositing::CompositorProxy;
-use crate::event_loop::EventLoop;
 use crossbeam_channel::Sender;
 use devtools_traits::{DevtoolsControlMsg, ScriptToDevtoolsControlMsg};
 use euclid::{TypedScale, TypedSize2D};
@@ -436,7 +436,7 @@ impl Pipeline {
                 return warn!(
                     "Pipeline remove child already removed ({:?}).",
                     browsing_context_id
-                )
+                );
             },
             Some(index) => self.children.remove(index),
         };

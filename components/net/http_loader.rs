@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-use brotli::Decompressor;
-use bytes::Bytes;
 use crate::connector::{create_http_client, Connector, WrappedBody, BUF_SIZE};
 use crate::cookie;
 use crate::cookie_storage::CookieStorage;
@@ -15,6 +13,8 @@ use crate::fetch::methods::{Data, DoneChannel, FetchContext, Target};
 use crate::hsts::HstsList;
 use crate::http_cache::HttpCache;
 use crate::resource_thread::AuthCache;
+use brotli::Decompressor;
+use bytes::Bytes;
 use crossbeam_channel::{unbounded, Sender};
 use devtools_traits::{
     ChromeToDevtoolsControlMsg, DevtoolsControlMsg, HttpRequest as DevtoolsHttpRequest,
@@ -512,10 +512,13 @@ pub fn http_fetch(
         }
 
         // Substep 2
-        if response.is_none() && request.is_subresource_request() && match request.origin {
-            Origin::Origin(ref origin) => *origin == request.url().origin(),
-            _ => false,
-        } {
+        if response.is_none() &&
+            request.is_subresource_request() &&
+            match request.origin {
+                Origin::Origin(ref origin) => *origin == request.url().origin(),
+                _ => false,
+            }
+        {
             // TODO (handle foreign fetch unimplemented)
         }
 
@@ -694,13 +697,13 @@ pub fn http_redirect_fetch(
         Some(Err(err)) => {
             return Response::network_error(NetworkError::Internal(
                 "Location URL parse failure: ".to_owned() + &err,
-            ))
+            ));
         },
         // Step 4
         Some(Ok(ref url)) if !matches!(url.scheme(), "http" | "https") => {
             return Response::network_error(NetworkError::Internal(
                 "Location URL not an HTTP(S) scheme".into(),
-            ))
+            ));
         },
         Some(Ok(url)) => url,
     };
@@ -759,7 +762,8 @@ pub fn http_redirect_fetch(
             ((*code == StatusCode::MOVED_PERMANENTLY || *code == StatusCode::FOUND) &&
                 request.method == Method::POST) ||
                 (*code == StatusCode::SEE_OTHER && request.method != Method::HEAD)
-        }) {
+        })
+    {
         request.method = Method::GET;
         request.body = None;
     }
@@ -1075,10 +1079,11 @@ fn http_network_or_cache_fetch(
             }
         }
         // Substep 4
-        if revalidating_flag && forward_response
-            .status
-            .as_ref()
-            .map_or(false, |s| s.0 == StatusCode::NOT_MODIFIED)
+        if revalidating_flag &&
+            forward_response
+                .status
+                .as_ref()
+                .map_or(false, |s| s.0 == StatusCode::NOT_MODIFIED)
         {
             if let Ok(mut http_cache) = context.state.http_cache.write() {
                 response = http_cache.refresh(&http_request, forward_response.clone(), done_chan);
@@ -1415,10 +1420,11 @@ fn cors_preflight_fetch(
     let response = http_network_or_cache_fetch(&mut preflight, false, false, &mut None, context);
 
     // Step 6
-    if cors_check(&request, &response).is_ok() && response
-        .status
-        .as_ref()
-        .map_or(false, |(status, _)| status.is_success())
+    if cors_check(&request, &response).is_ok() &&
+        response
+            .status
+            .as_ref()
+            .map_or(false, |(status, _)| status.is_success())
     {
         // Substep 1, 2
         let mut methods = if response
@@ -1431,7 +1437,7 @@ fn cors_preflight_fetch(
                 None => {
                     return Response::network_error(NetworkError::Internal(
                         "CORS ACAM check failed".into(),
-                    ))
+                    ));
                 },
             }
         } else {
@@ -1449,7 +1455,7 @@ fn cors_preflight_fetch(
                 None => {
                     return Response::network_error(NetworkError::Internal(
                         "CORS ACAH check failed".into(),
-                    ))
+                    ));
                 },
             }
         } else {

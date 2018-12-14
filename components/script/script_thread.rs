@@ -17,8 +17,6 @@
 //! a page runs its course and the script thread returns to processing events in the main event
 //! loop.
 
-use bluetooth_traits::BluetoothRequest;
-use canvas_traits::webgl::WebGLPipeline;
 use crate::devtools;
 use crate::document_loader::DocumentLoader;
 use crate::dom::bindings::cell::DomRefCell;
@@ -83,6 +81,8 @@ use crate::task_source::user_interaction::UserInteractionTaskSource;
 use crate::task_source::websocket::WebsocketTaskSource;
 use crate::task_source::TaskSourceName;
 use crate::webdriver_handlers;
+use bluetooth_traits::BluetoothRequest;
+use canvas_traits::webgl::WebGLPipeline;
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use devtools_traits::CSSError;
 use devtools_traits::{DevtoolScriptControlMsg, DevtoolsPageInfo};
@@ -935,7 +935,7 @@ impl ScriptThread {
                 return warn!(
                     "Paint worklet registered after pipeline {} closed.",
                     pipeline_id
-                )
+                );
             },
         };
         let _ = window
@@ -1192,14 +1192,16 @@ impl ScriptThread {
                             } else if let Some(parent) =
                                 new_layout_info.parent_info.and_then(|pipeline_id| {
                                     self.documents.borrow().find_document(pipeline_id)
-                                }) {
+                                })
+                            {
                                 parent.origin().clone()
                             } else if let Some(creator) = new_layout_info
                                 .load_data
                                 .creator_pipeline_id
                                 .and_then(|pipeline_id| {
                                     self.documents.borrow().find_document(pipeline_id)
-                                }) {
+                                })
+                            {
                                 creator.origin().clone()
                             } else {
                                 MutableOrigin::new(ImmutableOrigin::new_opaque())
@@ -1692,7 +1694,7 @@ impl ScriptThread {
                 return warn!(
                     "Received fire timer msg for a closed pipeline {}.",
                     pipeline_id
-                )
+                );
             },
         };
 
@@ -1884,7 +1886,7 @@ impl ScriptThread {
                 return warn!(
                     "Set scroll state message sent to nonexistent pipeline: {:?}",
                     id
-                )
+                );
             },
         };
 
@@ -2114,7 +2116,7 @@ impl ScriptThread {
                 return warn!(
                     "update history state after pipeline {} closed.",
                     pipeline_id
-                )
+                );
             },
             Some(window) => window.History().r().activate_state(history_state_id, url),
         }
@@ -2130,7 +2132,7 @@ impl ScriptThread {
                 return warn!(
                     "update history state after pipeline {} closed.",
                     pipeline_id
-                )
+                );
             },
             Some(window) => window.History().r().remove_states(history_states),
         }

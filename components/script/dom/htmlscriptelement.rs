@@ -819,9 +819,9 @@ impl HTMLScriptElementMethods for HTMLScriptElement {
 
     // https://html.spec.whatwg.org/multipage/#dom-script-async
     fn Async(&self) -> bool {
-        self.non_blocking.get() || self
-            .upcast::<Element>()
-            .has_attribute(&local_name!("async"))
+        self.non_blocking.get() ||
+            self.upcast::<Element>()
+                .has_attribute(&local_name!("async"))
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-script-async

@@ -4,9 +4,9 @@
 
 #![allow(non_snake_case)]
 
-use android_logger::{self, Filter};
 use crate::api::{self, EventLoopWaker, HostTrait, InitOptions, ReadFileTrait, ServoGlue, SERVO};
 use crate::gl_glue;
+use android_logger::{self, Filter};
 use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jfloat, jint, jstring, JNI_TRUE};
 use jni::{errors, JNIEnv, JavaVM};

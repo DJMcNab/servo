@@ -261,10 +261,11 @@ where
     let iter = selector.iter_from(selector.len() - from_offset);
     debug_assert!(
         iter.clone().next().is_some() ||
-            (from_offset != selector.len() && matches!(
-                selector.combinator_at_parse_order(from_offset),
-                Combinator::SlotAssignment | Combinator::PseudoElement
-            )),
+            (from_offset != selector.len() &&
+                matches!(
+                    selector.combinator_at_parse_order(from_offset),
+                    Combinator::SlotAssignment | Combinator::PseudoElement
+                )),
         "Got the math wrong: {:?} | {:?} | {} {}",
         selector,
         selector.iter_raw_match_order().as_slice(),
@@ -449,11 +450,9 @@ where
             element.containing_shadow_host()
         },
         Combinator::SlotAssignment => {
-            debug_assert!(
-                element
-                    .assigned_slot()
-                    .map_or(true, |s| s.is_html_slot_element())
-            );
+            debug_assert!(element
+                .assigned_slot()
+                .map_or(true, |s| s.is_html_slot_element()));
             element.assigned_slot()
         },
         Combinator::PseudoElement => element.pseudo_element_originating_element(),
@@ -663,9 +662,9 @@ where
         Component::Combinator(_) => unreachable!(),
         Component::Slotted(ref selector) => {
             // <slots> are never flattened tree slottables.
-            !element.is_html_slot_element() && element.assigned_slot().is_some() && context
-                .shared
-                .nest(|context| {
+            !element.is_html_slot_element() &&
+                element.assigned_slot().is_some() &&
+                context.shared.nest(|context| {
                     matches_complex_selector(selector.iter(), element, context, flags_setter)
                 })
         },

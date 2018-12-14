@@ -1533,11 +1533,9 @@ impl Element {
 
     pub fn get_int_attribute(&self, local_name: &LocalName, default: i32) -> i32 {
         // TODO: Is this assert necessary?
-        assert!(
-            local_name
-                .chars()
-                .all(|ch| !ch.is_ascii() || ch.to_ascii_lowercase() == ch)
-        );
+        assert!(local_name
+            .chars()
+            .all(|ch| !ch.is_ascii() || ch.to_ascii_lowercase() == ch));
         let attribute = self.get_attribute(&ns!(), local_name);
 
         match attribute {
@@ -1558,11 +1556,9 @@ impl Element {
     }
 
     pub fn get_uint_attribute(&self, local_name: &LocalName, default: u32) -> u32 {
-        assert!(
-            local_name
-                .chars()
-                .all(|ch| !ch.is_ascii() || ch.to_ascii_lowercase() == ch)
-        );
+        assert!(local_name
+            .chars()
+            .all(|ch| !ch.is_ascii() || ch.to_ascii_lowercase() == ch));
         let attribute = self.get_attribute(&ns!(), local_name);
         match attribute {
             Some(ref attribute) => match *attribute.value() {
@@ -2841,10 +2837,11 @@ impl<'a> SelectorsElement for DomRoot<Element> {
 
     fn is_empty(&self) -> bool {
         self.node.children().all(|node| {
-            !node.is::<Element>() && match node.downcast::<Text>() {
-                None => true,
-                Some(text) => text.upcast::<CharacterData>().data().is_empty(),
-            }
+            !node.is::<Element>() &&
+                match node.downcast::<Text>() {
+                    None => true,
+                    Some(text) => text.upcast::<CharacterData>().data().is_empty(),
+                }
         })
     }
 
